@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Christiantus Opara — WebFX IT Support</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy: #0a1628;
+    --deep: #0d1f3c;
+    --webfx-blue: #1a56db;
+    --accent: #3b82f6;
+    --gold: #f59e0b;
+    --white: #f8fafc;
+    --muted: #94a3b8;
+    --card: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(59,130,246,0.5);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.08s ease, width 0.2s, height 0.2s;
+  }
+
+  /* Noise grain overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    padding: 20px 60px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: linear-gradient(to bottom, rgba(10,22,40,0.95), transparent);
+    backdrop-filter: blur(2px);
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 3px;
+    color: var(--white);
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 120px 60px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 60% 40%, rgba(26,86,219,0.15) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 90% 80%, rgba(245,158,11,0.06) 0%, transparent 60%);
+  }
+
+  /* Animated grid lines */
+  .grid-lines {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+    background-size: 80px 80px;
+    animation: gridShift 20s linear infinite;
+  }
+  @keyframes gridShift {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(80px); }
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    position: relative; z-index: 2;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 12vw, 11rem);
+    line-height: 0.9;
+    letter-spacing: 2px;
+    position: relative; z-index: 2;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+  .hero-name .line2 {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(248,250,252,0.3);
+  }
+
+  .hero-tagline {
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 520px;
+    margin-top: 28px;
+    line-height: 1.7;
+    position: relative; z-index: 2;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+  .hero-tagline strong { color: var(--white); font-weight: 500; }
+
+  .hero-cta {
+    display: flex; gap: 16px; margin-top: 44px;
+    position: relative; z-index: 2;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+  .btn-primary {
+    background: var(--webfx-blue);
+    color: #fff;
+    padding: 14px 32px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: none;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: #1d4ed8; transform: translateY(-2px); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    padding: 14px 32px;
+    border: 1px solid var(--border);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    cursor: none;
+    text-decoration: none;
+    transition: color 0.2s, border-color 0.2s, transform 0.2s;
+    display: inline-block;
+  }
+  .btn-ghost:hover { color: var(--white); border-color: rgba(255,255,255,0.3); transform: translateY(-2px); }
+
+  .hero-badge {
+    position: absolute; right: 60px; bottom: 80px;
+    width: 160px; height: 160px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    z-index: 2;
+    animation: rotateSlow 20s linear infinite;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.2s forwards, rotateSlow 20s linear 1.2s infinite;
+  }
+  @keyframes rotateSlow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .hero-badge-inner {
+    animation: counterRotate 20s linear infinite;
+  }
+  @keyframes counterRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+  }
+  .hero-badge .year {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .hero-badge .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* SECTION BASE */
+  section {
+    padding: 120px 60px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-tag::after {
+    content: '';
+    display: block;
+    width: 40px; height: 1px;
+    background: var(--accent);
+  }
+
+  /* HISTORY SECTION */
+  .history {
+    background: linear-gradient(135deg, rgba(26,86,219,0.06) 0%, transparent 60%);
+    border-top: 1px solid var(--border);
+  }
+
+  .history-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+    margin-top: 40px;
+  }
+
+  .history-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+  .history-headline .highlight { color: var(--accent); }
+
+  .history-body p {
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.85;
+    margin-bottom: 20px;
+    font-weight: 300;
+  }
+  .history-body p strong { color: var(--white); font-weight: 500; }
+
+  .scholarship-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 32px;
+    margin-top: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .scholarship-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: linear-gradient(to bottom, var(--gold), var(--accent));
+  }
+  .scholarship-card .amount {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .scholarship-card .card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .scholarship-card .card-desc {
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin-top: 10px;
+  }
+
+  /* TIMELINE */
+  .timeline-section { border-top: 1px solid var(--border); }
+
+  .timeline-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    line-height: 1;
+    margin-bottom: 60px;
+  }
+
+  .timeline {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 0 40px;
+    max-width: 800px;
+  }
+  .timeline-item {
+    display: contents;
+  }
+  .timeline-year {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    color: var(--accent);
+    padding-top: 4px;
+    padding-bottom: 48px;
+    position: relative;
+  }
+  .timeline-year::after {
+    content: '';
+    position: absolute;
+    right: -20px; top: 14px;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .timeline-year::before {
+    content: '';
+    position: absolute;
+    right: -17px; top: 22px;
+    width: 2px;
+    height: calc(100% - 14px);
+    background: var(--border);
+  }
+  .timeline-content {
+    padding-bottom: 48px;
+  }
+  .timeline-content h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .timeline-content p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+  .timeline-item:last-child .timeline-year::before { display: none; }
+
+  /* SKILLS SECTION */
+  .skills-section { border-top: 1px solid var(--border); }
+
+  .skills-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    line-height: 1;
+    margin-bottom: 60px;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .skill-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 32px 28px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .skill-block:hover {
+    background: rgba(59,130,246,0.08);
+    border-color: rgba(59,130,246,0.3);
+  }
+  .skill-icon {
+    font-size: 1.6rem;
+    margin-bottom: 16px;
+  }
+  .skill-block h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .skill-block p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  /* WHY WEBFX */
+  .why-section { border-top: 1px solid var(--border); }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    margin-top: 40px;
+  }
+
+  .why-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 5vw, 4.2rem);
+    line-height: 1.05;
+  }
+  .why-headline .highlight { color: var(--accent); }
+
+  .why-points { display: flex; flex-direction: column; gap: 28px; }
+  .why-point {
+    display: flex; gap: 20px; align-items: flex-start;
+  }
+  .why-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: rgba(59,130,246,0.25);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 40px;
+  }
+  .why-point-text h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+  .why-point-text p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  /* CTA SECTION */
+  .cta-section {
+    border-top: 1px solid var(--border);
+    text-align: center;
+    background: linear-gradient(135deg, rgba(26,86,219,0.08) 0%, transparent 50%);
+  }
+
+  .cta-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 7vw, 7rem);
+    line-height: 0.95;
+    margin-bottom: 24px;
+  }
+  .cta-headline .outline {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(248,250,252,0.25);
+  }
+  .cta-sub {
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto 48px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+  .cta-sub strong { color: var(--white); }
+
+  .cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+  .btn-download {
+    background: var(--gold);
+    color: #0a1628;
+    padding: 16px 40px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: none;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+    display: inline-block;
+  }
+  .btn-download:hover { opacity: 0.85; transform: translateY(-2px); }
+
+  .contact-strip {
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+  .contact-item {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .contact-item .c-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .contact-item .c-val {
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 32px 60px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 2;
+    position: relative;
+  }
+  footer p {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: rgba(148,163,184,0.4);
+    text-transform: uppercase;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--navy); }
+  ::-webkit-scrollbar-thumb { background: var(--webfx-blue); }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section { padding: 80px 24px; }
+    .hero { padding: 100px 24px 60px; }
+    .hero-badge { display: none; }
+    .history-grid, .why-grid { grid-template-columns: 1fr; gap: 40px; }
+    .skills-grid { grid-template-columns: 1fr 1fr; }
+    footer { padding: 24px; flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">C<span>.</span>OPARA</div>
+  <div class="nav-links">
+    <a href="#history">History</a>
+    <a href="#growth">Growth</a>
+    <a href="#skills">Skills</a>
+    <a href="#why">Why WebFX</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="grid-lines"></div>
+
+  <div class="hero-eyebrow">WebFX IT Support — Application 2026</div>
+
+  <h1 class="hero-name">
+    CHRISTIANTUS<br>
+    <span class="line2">OPARA</span>
+  </h1>
+
+  <p class="hero-tagline">
+    <strong>WebFX believed in me in 2022.</strong> Now I'm graduating — and I'm ready to give that belief back tenfold as your next IT Support team member.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#history" class="btn-primary">Read My Story</a>
+    <a href="#contact" class="btn-ghost">Jump to Resume ↓</a>
+  </div>
+
+  <div class="hero-badge">
+    <div class="hero-badge-inner">
+      <div class="year">2022</div>
+      <div class="label">WebFX<br>Scholar</div>
+    </div>
+  </div>
+</section>
+
+<!-- HISTORY -->
+<section class="history" id="history">
+  <div class="section-tag">The History</div>
+
+  <div class="history-grid">
+    <div>
+      <h2 class="history-headline reveal">
+        WebFX<br>
+        <span class="highlight">Invested</span><br>
+        In Me First.
+      </h2>
+
+      <div class="scholarship-card reveal">
+        <div class="card-label">WebFX Scholarship — 2022</div>
+        <div class="amount">$1,000</div>
+        <div class="card-desc">Awarded for completing a website development course and outstanding involvement in robotics and tech community engagement — before I ever stepped on a college campus.</div>
+      </div>
+    </div>
+
+    <div class="history-body reveal">
+      <p>In 2022, WebFX awarded me a <strong>$1,000 scholarship</strong> upon graduating high school — recognizing my passion for technology, my Udemy web development coursework, and my active role in robotics. That wasn't just money. It was a signal: <strong>this company sees potential in people who are self-driven.</strong></p>
+
+      <p>I took that seriously. I enrolled at <strong>Harrisburg University of Science and Technology</strong>, pursued a B.S. in Information Systems, maintained a <strong>3.4 GPA</strong>, and immediately started building real experience — not just coursework.</p>
+
+      <p>Last year, <strong>Emily Livingston from your talent team</strong> personally reached out after reviewing my application. She acknowledged my credentials, told me the timing wasn't right for an intern spot, and invited me to apply again as graduation neared. She kept the door open. <strong>I walked back through it.</strong></p>
+
+      <p>That's not a casual applicant. That's someone with history with your company — and a reason to show up every day.</p>
+    </div>
+  </div>
+</section>
+
+<!-- GROWTH TIMELINE -->
+<section class="timeline-section" id="growth">
+  <div class="section-tag">The Growth Arc</div>
+  <h2 class="timeline-headline reveal">What I Built<br>While Waiting.</h2>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-year">2022</div>
+      <div class="timeline-content reveal">
+        <h3>WebFX Scholarship + High School Graduation</h3>
+        <p>Received $1,000 WebFX scholarship for website development and robotics. Graduated with a 4.05 GPA and enrolled at Harrisburg University.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2023</div>
+      <div class="timeline-content reveal">
+        <h3>Sales & Communication Skills — Vector Marketing</h3>
+        <p>Joined Vector as a Sales Associate. Built one-on-one communication skills, data-driven performance tracking, and customer relationship management.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2024</div>
+      <div class="timeline-content reveal">
+        <h3>IT Help Desk Technician — Harrisburg University</h3>
+        <p>Hired as the campus IT Help Desk tech. Diagnosed and resolved hardware, software, and network issues. Configured AV systems, managed user accounts, and supported live events with cameras and audio equipment.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2024</div>
+      <div class="timeline-content reveal">
+        <h3>Engineering & Facilities Guard — Whitaker Center</h3>
+        <p>Monitored building technology infrastructure. Troubleshot systems in a public-facing science and arts facility. Strict protocol adherence in a high-traffic environment.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2025</div>
+      <div class="timeline-content reveal">
+        <h3>Front Desk Associate & Personal Trainer — East Shore YMCA</h3>
+        <p>Served as first point of contact for hundreds of members. Increased customer satisfaction scores by 20%. Managed scheduling systems, transactions, and multi-line phone communications.</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2026</div>
+      <div class="timeline-content reveal">
+        <h3>B.S. Information Systems — Graduating May 14th</h3>
+        <p>Completing my degree with a 3.4 GPA. Coursework: Advanced Networking I & II, Operating Systems I & II, Cybersecurity, Programming (Python/Java), Data & Information Systems Design.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="skills-section" id="skills">
+  <div class="section-tag">Technical Profile</div>
+  <h2 class="skills-headline reveal">What I Bring<br>to the Table.</h2>
+
+  <div class="skills-grid">
+    <div class="skill-block reveal">
+      <div class="skill-icon">🖥️</div>
+      <h3>OS & Hardware</h3>
+      <p>Windows 10/11 and macOS environments. Hardware diagnostics, workstation setup, system imaging basics, and peripheral configuration.</p>
+    </div>
+    <div class="skill-block reveal">
+      <div class="skill-icon">🌐</div>
+      <h3>Networking</h3>
+      <p>TCP/IP fundamentals, LAN/WAN configuration, network troubleshooting. Two semesters of Advanced Networking coursework.</p>
+    </div>
+    <div class="skill-block reveal">
+      <div class="skill-icon">🛠️</div>
+      <h3>IT Help Desk</h3>
+      <p>2 years of real Help Desk experience. Ticketing systems, user account management, escalation protocols, and end-user support at university scale.</p>
+    </div>
+    <div class="skill-block reveal">
+      <div class="skill-icon">💻</div>
+      <h3>Programming</h3>
+      <p>Python, Java, HTML/CSS. Udemy Web Design certified. Understanding of software fundamentals that helps diagnose software-side issues faster.</p>
+    </div>
+    <div class="skill-block reveal">
+      <div class="skill-icon">🔐</div>
+      <h3>Cybersecurity</h3>
+      <p>CompTIA CC, Networking & Security Essentials, and Cloud Essentials+ certifications. Security-minded approach to system access and user management.</p>
+    </div>
+    <div class="skill-block reveal">
+      <div class="skill-icon">🎙️</div>
+      <h3>Communication</h3>
+      <p>Multilingual (English, Igbo, Yoruba, Ibibio). 3+ years of customer-facing roles. Comfortable translating technical issues for non-technical users.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHY WEBFX -->
+<section class="why-section" id="why">
+  <div class="section-tag">Why WebFX</div>
+
+  <div class="why-grid">
+    <h2 class="why-headline reveal">
+      This Isn't<br>
+      Just Any<br>
+      <span class="highlight">Application.</span>
+    </h2>
+
+    <div class="why-points">
+      <div class="why-point reveal">
+        <div class="why-num">01</div>
+        <div class="why-point-text">
+          <h4>I Already Know Your Culture</h4>
+          <p>WebFX gave me a scholarship before I was a college student. I've been watching this company for 4 years. I know what you value — quality, urgency, and people who take pride in their work.</p>
+        </div>
+      </div>
+      <div class="why-point reveal">
+        <div class="why-num">02</div>
+        <div class="why-point-text">
+          <h4>I'm Local and Committed</h4>
+          <p>Harrisburg is home. This is an on-site role and I have zero issues with that. I show up, I'm on time, and I'm here to build something long-term — not just log hours.</p>
+        </div>
+      </div>
+      <div class="why-point reveal">
+        <div class="why-num">03</div>
+        <div class="why-point-text">
+          <h4>I'm Ready Right Now</h4>
+          <p>Graduating May 14th. Two years of real Help Desk experience. Certifications in progress. I'm not here to start learning — I'm here to contribute from day one and grow fast.</p>
+        </div>
+      </div>
+      <div class="why-point reveal">
+        <div class="why-num">04</div>
+        <div class="why-point-text">
+          <h4>The Door Was Left Open</h4>
+          <p>Emily told me to come back. I did. That kind of follow-through is exactly what you want in someone supporting your internal tech team.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="section-tag" style="justify-content:center;">The Ask</div>
+
+  <h2 class="cta-headline reveal">
+    LET'S MAKE IT<br>
+    <span class="outline">OFFICIAL.</span>
+  </h2>
+
+  <p class="cta-sub reveal">
+    I'm applying for the <strong>IT Support Internship</strong> at WebFX — and I'm open to discussing full-time opportunities as a recent grad. Let's talk.
+  </p>
+
+  <div class="cta-buttons reveal">
+    <a href="Christiantus_Opara_WebFX_IT_Resume.docx" class="btn-download" download>⬇ Download Resume</a>
+    <a href="mailto:christiantusop@gmail.com" class="btn-primary">christiantusop@gmail.com</a>
+    <a href="https://www.linkedin.com/in/christiantus-opara-2831082a3/" target="_blank" class="btn-ghost">LinkedIn ↗</a>
+  </div>
+
+  <div class="contact-strip reveal">
+    <div class="contact-item">
+      <span class="c-label">Phone</span>
+      <span class="c-val">717-956-7267</span>
+    </div>
+    <div class="contact-item">
+      <span class="c-label">Location</span>
+      <span class="c-val">Harrisburg, PA</span>
+    </div>
+    <div class="contact-item">
+      <span class="c-label">Availability</span>
+      <span class="c-val">Immediately — May 14, 2026</span>
+    </div>
+    <div class="contact-item">
+      <span class="c-label">GPA</span>
+      <span class="c-val">3.4 / 4.0</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Christiantus Opara — WebFX IT Support Application 2026</p>
+  <p>Harrisburg University of Science and Technology</p>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.transform = `translate(${mx - 6}px, ${my - 6}px)`;
+  });
+
+  function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform += ' scale(1.8)';
+      ring.style.width = '60px'; ring.style.height = '60px';
+    });
+    el.addEventListener('mouseleave', () => {
+      ring.style.width = '36px'; ring.style.height = '36px';
+    });
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => obs.observe(r));
+</script>
+</body>
+</html>
